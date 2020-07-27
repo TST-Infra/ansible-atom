@@ -15,7 +15,12 @@ atom_install_dependencies: "true"
 # Install some extra packages specific to our official Vagrant-based
 # development box. See `tasks/devbox.yml` for more details.
 atom_devbox: "no"
-
+# Use a different AtoM directory for each revision
+atom_revision_directory: "no"
+atom_revision_directory_latest_symlink_dir: "src"
+# Create a simlink from atom_path/private to atom_path/atom_revision_directory_latest_symlink_dir
+atom_private_symlink: "no"
+atom_path_extra: ""
 #
 # Choose php version to use
 #   - For RH/Centos 70,71,72 and 73 are available. Default is 72
@@ -36,23 +41,32 @@ atom_worker_service_name: "{{ atom_path | basename }}-worker"
 atom_worker_old_config: "no"
 
 #
-# Misc
+# CLI tasks 
 #
 
+# Compile all available themes
+atom_compile_all_themes: "no"
 # Populate search index
 atom_populate_index: "no"
-
-# Flush database
+# Populate search index
 atom_flush_data: "no"
+# Rebuild nested-set and generate slugs
+atom_fix_data: "no"
+# Upgrade sql
+atom_upgrade_sql: "no"
+
+#
+# Misc
+#
 
 # Build static assets
 atom_build_static_assets: "yes"
 
 # Themes (to build)
 atom_themes:
-  - path: "{{ atom_path }}/plugins/arDominionPlugin"
+  - path: "{{ atom_path }}/{{ atom_path_extra }}/plugins/arDominionPlugin"
     build_cmd: "make"
-  - path: "{{ atom_path }}/plugins/arArchivesCanadaPlugin"
+  - path: "{{ atom_path }}/{{ atom_path_extra }}/plugins/arArchivesCanadaPlugin"
     build_cmd: "make"
 
 # Plug-ins
@@ -204,7 +218,7 @@ atom_pool_php_envs:
 #
 
 atom_drmc: "no"
-atom_drmc_path: "{{ atom_path }}/plugins/arDrmcPlugin/frontend"
+atom_drmc_path: "{{ atom_path }}/{{ atom_path_extra }}/plugins/arDrmcPlugin/frontend"
 # Install Mock API
 atom_drmc_mock: "no"
 # Copy ES plugins to /etc/elasticsearch

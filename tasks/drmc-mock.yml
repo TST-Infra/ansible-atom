@@ -7,7 +7,7 @@
 - name: "Install mock api"
   shell: "HOME={{ atom_path }} npm install"
   args:
-    chdir: "{{ atom_path }}/plugins/arDrmcPlugin/frontend/mock_api/"
+    chdir: "{{ atom_path }}/{{ atom_path_extra }}/plugins/arDrmcPlugin/frontend/mock_api/"
   become: yes
   become_user: www-data
 
@@ -37,7 +37,5 @@
 - name: "Populate data"
   command: "./populate_sample_data"
   args:
-    chdir: "/usr/share/nginx/atom/plugins/arDrmcPlugin/frontend/mock_api"
+    chdir: "{{ atom_path }}/{{ atom_path_extra }}/plugins/arDrmcPlugin/frontend/mock_api"
   become: yes
-
-

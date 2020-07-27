@@ -1,0 +1,79 @@
+---
+
+- name: "Create revision symlink"
+  file:
+    state: "link"
+    src: "{{ atom_path }}/{{ atom_path_extra }}"
+    dest: "{{ atom_path }}/{{ atom_revision_directory_latest_symlink_dir }}"
+    force: "yes"
+    owner: "{{ atom_user }}"
+    group: "{{ atom_group }}"
+  when: 
+    - "atom_revision_directory_latest_symlink_dir is defined"
+    - "atom_revision_directory|bool"
+
+# AtoM private symlink for digital object access control
+- name: "Create private symlink"
+  file:
+    state: "link"
+    src: "{{ atom_path }}/{{ atom_revision_directory_latest_symlink_dir }}"
+    dest: "{{ atom_path }}/private"
+    force: "yes"
+    owner: "{{ atom_user }}"
+    group: "{{ atom_group }}"
+  when:
+    - "atom_revision_directory_latest_symlink_dir is defined"
+    - "atom_revision_directory|bool"
+    - "atom_private_symlink|bool"
+
+- name: "Create uploads symlink directory"
+  file:
+    state: "directory"
+    path: "{{ atom_uploads_symlink }}"
+    owner: "{{ atom_user }}"
+    group: "{{ atom_group }}"
+  when: "atom_uploads_symlink is defined"
+
+- name: "Uploads symlink"
+  file:
+    state: "link"
+    src: "{{ atom_uploads_symlink }}"
+    dest: "{{ atom_path }}/{{ atom_path_extra }}/uploads"
+    force: "yes"
+    owner: "{{ atom_user }}"
+    group: "{{ atom_group }}"
+  when: "atom_uploads_symlink is defined"
+
+- name: "Uploads directory"
+  file:
+    state: "directory"
+    path: "{{ atom_path }}/{{ atom_path_extra }}/uploads"
+    owner: "{{ atom_user }}"
+    group: "{{ atom_group }}"
+  when: "atom_uploads_symlink is undefined"
+
+- name: "Create downloads symlink directory"
+  file:
+    state: "directory"
+    path: "{{ atom_downloads_symlink }}"
+    owner: "{{ atom_user }}"
+    group: "{{ atom_group }}"
+  when: "atom_downloads_symlink is defined"
+
+- name: "Downloads symlink"
+  file:
+    state: "link"
+    src: "{{ atom_downloads_symlink }}"
+    dest: "{{ atom_path }}/{{ atom_path_extra }}/downloads"
+    force: "yes"
+    owner: "{{ atom_user }}"
+    group: "{{ atom_group }}"
+  when: "atom_downloads_symlink is defined"
+
+- name: "Downloads directory"
+  file:
+    state: "directory"
+    path: "{{ atom_path }}/{{ atom_path_extra }}/downloads"
+    owner: "{{ atom_user }}"
+    group: "{{ atom_group }}"
+  when: "atom_downloads_symlink is undefined"

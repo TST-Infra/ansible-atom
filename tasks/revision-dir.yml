@@ -1,0 +1,19 @@
+---
+- name: "Get latest and current revision"
+  git:
+    repo: "{{ atom_repository_url }}"
+    version: "{{ atom_repository_version }}"
+    dest: "{{ atom_path }}/{{ atom_revision_directory_latest_symlink_dir }}" 
+    clone: no
+    update: no
+  register: "atom_revision_git_output"
+  when: "atom_revision_directory|bool and atom_revision_directory_latest_symlink_dir is defined"
+
+- name: "Print revisions"
+  debug: "msg='current={{ atom_revision_git_output.before }} latest={{ atom_revision_git_output.after }}'"
+  when: "atom_revision_directory|bool and atom_revision_directory_latest_symlink_dir is defined"
+
+- name: "Define atom_extra_path when using atom_revision_directory"
+  set_fact:
+    atom_path_extra: "atom-{{ atom_revision_git_output.after }}"
+  when: "atom_revision_directory|bool and atom_revision_directory_latest_symlink_dir is defined"
