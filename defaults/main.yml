@@ -5,16 +5,19 @@
 #
 
 atom_environment_type: "production"
-atom_user: "www-data"
-atom_group: "www-data"
+atom_user: "nginx"
+atom_group: "nginx"
 atom_path: "/usr/share/nginx/atom"
 atom_repository_url: "https://github.com/artefactual/atom.git"
-atom_repository_version: "stable/2.4.x"
+atom_repository_version: "stable/2.5.x"
 atom_install_site: "true"
 atom_install_dependencies: "true"
 # Install some extra packages specific to our official Vagrant-based
 # development box. See `tasks/devbox.yml` for more details.
 atom_devbox: "no"
+
+atom_rh_deps_install_epel_repo: "false"
+atom_server_listen_port: "81"
 
 #
 # Choose php version to use
@@ -56,8 +59,8 @@ atom_themes:
     build_cmd: "make"
 
 # Plug-ins
-atom_plugins:
-  - "qtSwordPlugin"
+atom_plugins: []
+#  - "qtSwordPlugin"
 
 atom_gdpr_enabled: "False"
 
@@ -146,7 +149,7 @@ atom_app_gearman_job_server: "127.0.0.1:4730"
 #   Atom 2.1, Binder 0.8: "2.1"
 #   Atom 2.4: "2.4"
 #   Atom 2.5, Binder 0.9: "2.5"
-atom_es_config_version: "2.4"
+atom_es_config_version: "2.5"
 atom_template_search_yml: "atom/apps/qubit/config/{{ atom_es_config_version }}-search.yml"
 
 atom_es_host: "127.0.0.1"
@@ -169,8 +172,8 @@ atom_pool_user: "{{ atom_user }}"
 atom_pool_group: "{{ atom_group }}"
 atom_pool_listen: "/var/run/php-fpm.{{ atom_path | basename }}.sock"
 atom_pool_listen_allowed_clients: ""
-atom_pool_listen_owner: www-data  # Nginx will use this if it's installed in the same machine
-atom_pool_listen_group: www-data  # Nginx will use this if it's installed in the same machine
+atom_pool_listen_owner: nginx  # Nginx will use this if it's installed in the same machine
+atom_pool_listen_group: nginx  # Nginx will use this if it's installed in the same machine
 atom_pool_listen_mode: "0600"
 atom_pool_pm: "dynamic"
 atom_pool_pm_max_children: "30"

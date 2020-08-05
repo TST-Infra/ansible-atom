@@ -1,0 +1,47 @@
+---
+    - hosts: all
+      remote_user: root
+    
+      tasks:
+        - name: "Enable elasticsearch-5 repo"
+          yum_repository:
+            name: elasticsearch-5
+            description: Elasticsearch repository for 5.X packages
+            baseurl: https://artifacts.elastic.co/packages/5.x/yum
+            gpgcheck: 1
+            gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+            enabled: 1
+
+        - name: "Install nginx, mariadb-server, memcached, elasticsearch"
+          yum:
+            name:
+              - "nginx"
+              - "mariadb-server"
+              - "mariadb"
+              - "memcached"
+              - "java-1.8.0-openjdk-headless"
+              - "elasticsearch"
+            state: "installed"
+
+        - name: "Enable service for nginx, mariadb-server, memcached, elasticsearch"
+          systemd:
+            name: "{{ item }}"
+            state: "restarted"
+            enabled: "yes"
+          with_items:
+            - "nginx"
+            - "mariadb"
+            - "memcached"
+            - "elasticsearch"
+
+        - name: "Install atom nginx config"
+          template:
+            src: "etc/nginx/conf.d/atom.conf"
+            dest: "/etc/nginx/conf.d/atom.conf"
+
+        - name: Include task main
+          include: "tasks/main.yml"
+
+      handlers:
+        - name: Include handlers
+          include: "handlers/main.yml"

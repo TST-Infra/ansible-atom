@@ -4,6 +4,8 @@
   yum: 
     name: "epel-release"
     state: "installed"
+  when:
+    - atom_rh_deps_install_epel_repo|bool == true
 
 - name: "Enable epel repo"
   ini_file:
@@ -11,6 +13,8 @@
     section: epel
     option: enabled
     value: 1
+  when:
+    - atom_rh_deps_install_epel_repo|bool == true
 
 - name: "Install scl repo (CentOS)"
   yum: 
