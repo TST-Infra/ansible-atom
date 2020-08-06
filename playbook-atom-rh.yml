@@ -12,7 +12,7 @@
             gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch
             enabled: 1
 
-        - name: "Install nginx, mariadb-server, memcached, elasticsearch"
+        - name: "Install nginx, mariadb-server, memcached, elasticsearch, gearmand"
           yum:
             name:
               - "nginx"
@@ -21,9 +21,10 @@
               - "memcached"
               - "java-1.8.0-openjdk-headless"
               - "elasticsearch"
+              - "gearmand"
             state: "installed"
 
-        - name: "Enable service for nginx, mariadb-server, memcached, elasticsearch"
+        - name: "Enable service for nginx, mariadb-server, memcached, elasticsearch, gearmand"
           systemd:
             name: "{{ item }}"
             state: "restarted"
@@ -33,6 +34,7 @@
             - "mariadb"
             - "memcached"
             - "elasticsearch"
+            - "gearmand"
 
         - name: "Install atom nginx config"
           template:
