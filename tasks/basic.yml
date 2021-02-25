@@ -117,6 +117,9 @@
   when:
     - composer_lock.stat.exists
     - atom_environment_type != "development"
+  environment:
+    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{https_proxy}}"
 
 - name: "Install Composer dependencies for dev"
   composer:
@@ -126,6 +129,9 @@
   when:
     - composer_lock.stat.exists
     - atom_environment_type == "development"
+  environment:
+    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{https_proxy}}"
 
 - name: "SELinux tasks"
   block:

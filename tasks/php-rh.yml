@@ -1,23 +1,21 @@
 ---
-
-
 - name: "Install PHP packages in RH/Centos"
   yum:
-    name: "{{ item }}"
+    name: 
+      - "rh-php{{ php_version }}-php-cli"        
+      - "rh-php{{ php_version }}-php-ldap"
+      - "rh-php{{ php_version }}-php-fpm"
+      - "rh-php{{ php_version }}-php-mysqlnd"
+      - "rh-php{{ php_version }}-php-xml"
+      - "rh-php{{ php_version }}-php-opcache"
+      - "rh-php{{ php_version }}-php-devel"
+      - "rh-php{{ php_version }}-php-mbstring"
+      - "rh-php{{ php_version }}-php-pecl-apcu"
+      - "zlib-devel" # needed for memcached
+      - "unzip"
+      - "java-1.8.0-openjdk-headless" # needed for fop
     state: "latest"
-  with_items:
-    - "rh-php{{ php_version }}-php-cli"        
-    - "rh-php{{ php_version }}-php-ldap"
-    - "rh-php{{ php_version }}-php-fpm"
-    - "rh-php{{ php_version }}-php-mysqlnd"
-    - "rh-php{{ php_version }}-php-xml"
-    - "rh-php{{ php_version }}-php-opcache"
-    - "rh-php{{ php_version }}-php-devel"
-    - "rh-php{{ php_version }}-php-mbstring"
-    - "rh-php{{ php_version }}-php-pecl-apcu"
-    - "zlib-devel" # needed for memcached
-    - "unzip"
-    - "java-1.8.0-openjdk-headless" # needed for fop
+    
 
 - name: "Create /usr/bin/php link"
   file:
@@ -32,7 +30,10 @@
     creates: "/opt/rh/rh-php{{ php_version }}/pecl-memcache-NON_BLOCKING_IO_php7"
     copy: "no"
     owner: "root"
-    group: "root"  
+    group: "root"
+  environment:
+    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{https_proxy}}"
 
 - name: "Build memcached extension"
   shell: "phpize && \

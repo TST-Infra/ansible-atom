@@ -33,6 +33,9 @@
         copy: "no"
         owner: "root"
         group: "root"
+      environment:
+        http_proxy: "{{http_proxy}}"
+        https_proxy: "{{https_proxy}}"
 
     - name: "Install Apache FOP: set up FOP_HOME (ubuntu <=16.04 or RH)"
       lineinfile:

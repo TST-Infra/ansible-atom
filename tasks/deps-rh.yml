@@ -1,69 +1,36 @@
 ---
 
-- name: "Install epel repo"
-  yum: 
-    name: "epel-release"
-    state: "installed"
-  when:
-    - atom_rh_deps_install_epel_repo|bool == true
-
-- name: "Enable epel repo"
-  ini_file:
-    path: /etc/yum.repos.d/epel.repo
-    section: epel
-    option: enabled
-    value: 1
-  when:
-    - atom_rh_deps_install_epel_repo|bool == true
-
-- name: "Install scl repo (CentOS)"
-  yum: 
-    name: "centos-release-scl"
-    state: "installed"
-  when:
-    - ansible_distribution == "CentOS"
-
-# (In addition to CentOS, this role previously had tasks to enable
-# a SCL repo in RedHat, but they were removed because they caused the
-# role to fail)
-
-
-- name: "Add rpmfusion free repo (for ffmpeg)"
-  command: 'yum localinstall -y --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm'
-  args:
-    creates: "/etc/yum.repos.d/rpmfusion-free-updates.repo"
-
 - name: "Install AtoM dependencies"
   yum:
-    name: "{{ item }}"
+    name: 
+      - "ImageMagick"       # ↓ AtoM dependencies
+      - "ghostscript"       #
+      - "poppler-utils"     #
+      - "ffmpeg"            #
+      - "git"               # ↓ Build dependencies
+      - "rh-nodejs6"        #
+      - "make"              #
+      - "gcc"               #
+      - "python-pip"        #
+      - "python-setuptools" #
+      - "python2-cryptography"
+      - "java-1.8.0-openjdk-headless" # needed by FOP
     state: "latest"
-  with_items:
-    - "ImageMagick"       # ↓ AtoM dependencies
-    - "ghostscript"       #
-    - "poppler-utils"     #
-    - "ffmpeg"            #
-    - "git"               # ↓ Build dependencies
-    - "rh-nodejs6"        #
-    - "make"              #
-    - "gcc"               #
-    - "python-pip"        #
-    - "python-setuptools" #
-    - "java-1.8.0-openjdk-headless" # needed by FOP
-
-- name: "Upgrade pip"
-  pip:
-    name: "pip"
-    state: "latest"
-
+    
 - name: "Install Sphinx"
   pip:
-    name: "{{ item }}"
-    state: "latest"
-  with_items:
-    - "sphinx"
-    - "sphinxcontrib-httpdomain"
-    - "sphinx_rtd_theme"
+    name:
+      - "sphinx==1.8.5"
+      - "sphinxcontrib-httpdomain==1.7.0"
+      - "sphinx_rtd_theme==0.5.0"
+    state: "present"
+  environment:
+    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{https_proxy}}"
 
-# don't quote the shell command, or it won't work (also need to escape the <)
+#don't quote the shell command, or it won't work (also need to escape the <)
 - name: "Install npm (SCL) global dependencies (also required during the build)"
   shell: scl enable rh-nodejs6 'npm install -g grunt-cli less@\<2.0.0'
+  environment:
+    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{https_proxy}}"

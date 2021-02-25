@@ -1,49 +1,61 @@
 ---
-    - hosts: all
-      remote_user: root
+- hosts: atom
+  gather_facts: true
+  become: yes
+  become_method: sudo
+
+  tasks:
+
+    - name: "Install nginx, mysql-community-server, memcached, elasticsearch, gearmand"
+      yum:
+        name:
+          - "nginx"
+          - "mysql-community-server"
+          - "memcached"
+          - "java-1.8.0-openjdk-headless"
+          - "elasticsearch"
+          - "gearmand"
+        state: "installed"
+
+    - name: "Creates nginx certificates dir"
+      file:
+        dest: "{{ nginx_certs_dir_path }}"
+        state: "directory"
+        mode: "0755"
+        owner: "root"
+
+    - name: "Import certificate file"
+      get_url:
+        url: "{{ nginx_certs_base_url }}/{{ ansible_fqdn }}.crt"
+        dest: "{{ nginx_certs_dir_path }}/{{ ansible_fqdn }}.crt"
+        mode: '0644'
     
-      tasks:
-        - name: "Enable elasticsearch-5 repo"
-          yum_repository:
-            name: elasticsearch-5
-            description: Elasticsearch repository for 5.X packages
-            baseurl: https://artifacts.elastic.co/packages/5.x/yum
-            gpgcheck: 1
-            gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch
-            enabled: 1
+    - name: "Import certificate key"
+      get_url:
+        url: "{{ nginx_certs_base_url }}/{{ ansible_fqdn }}.key"
+        dest: "{{ nginx_certs_dir_path }}/{{ ansible_fqdn }}.key"
+        mode: '0644'
+    
+    - name: "Enable service for nginx, mysqld, memcached, elasticsearch, gearmand"
+      systemd:
+        name: "{{ item }}"
+        state: "restarted"
+        enabled: "yes"
+      with_items:
+        - "nginx"
+        - "mysqld"
+        - "memcached"
+        - "elasticsearch"
+        - "gearmand"
 
-        - name: "Install nginx, mariadb-server, memcached, elasticsearch, gearmand"
-          yum:
-            name:
-              - "nginx"
-              - "mariadb-server"
-              - "mariadb"
-              - "memcached"
-              - "java-1.8.0-openjdk-headless"
-              - "elasticsearch"
-              - "gearmand"
-            state: "installed"
+    - name: "Install atom nginx config"
+      template:
+        src: "etc/nginx/conf.d/atom.conf"
+        dest: "/etc/nginx/conf.d/atom.conf"
 
-        - name: "Enable service for nginx, mariadb-server, memcached, elasticsearch, gearmand"
-          systemd:
-            name: "{{ item }}"
-            state: "restarted"
-            enabled: "yes"
-          with_items:
-            - "nginx"
-            - "mariadb"
-            - "memcached"
-            - "elasticsearch"
-            - "gearmand"
+    - name: Include task main
+      include: "tasks/main.yml"
 
-        - name: "Install atom nginx config"
-          template:
-            src: "etc/nginx/conf.d/atom.conf"
-            dest: "/etc/nginx/conf.d/atom.conf"
-
-        - name: Include task main
-          include: "tasks/main.yml"
-
-      handlers:
-        - name: Include handlers
-          include: "handlers/main.yml"
+  handlers:
+    - name: Include handlers
+      include: "handlers/main.yml"
