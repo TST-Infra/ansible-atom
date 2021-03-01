@@ -146,6 +146,11 @@
         name: httpd_can_network_connect
         state: yes
         persistent: yes
+    - name: "Selinux: enable httpd_use_nfs"
+      seboolean:
+        name: httpd_use_nfs
+        state: yes
+        persistent: yes
   when:
     - ansible_os_family == "RedHat"
     - ansible_selinux is defined and ansible_selinux != False and ansible_selinux.status == 'enabled'
